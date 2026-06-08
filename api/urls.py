@@ -2,7 +2,8 @@ from django.urls import path
 from .views import (DirectorAPIView, DirectorRetrieveAPIView,
                     CountryAPIView, CountryRetrieveAPIView,
                     GenreAPIView, GenreRetrieveAPIView,
-                    MovieAPIView, MovieRetrieveAPIView)
+                    MovieAPIView, MovieRetrieveAPIView,
+                    CommentAPIView, CommentRetrieveAPIView)
 
 urlpatterns = [
     path('directors/', DirectorAPIView.as_view()),
@@ -18,4 +19,7 @@ urlpatterns = [
 
     path('genres/', GenreAPIView.as_view()),
     path('genres/<int:pk>/', GenreRetrieveAPIView.as_view()),
+
+    path('movies/<int:movie_id>/comments/', CommentAPIView.as_view()),
+    path('movies/<int:movie_id>/comments/<int:comment_id>/', CommentRetrieveAPIView.as_view()),
 ]

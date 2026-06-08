@@ -1,6 +1,10 @@
-from .models import Movie, Genre, Director, Country
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from .serializers import DirectorSerializer, MovieSerializer, GenreSerializer, CountrySerializer, UserSerializer
+from rest_framework import permissions
+from rest_framework.generics import get_object_or_404
+
+from .serializers import DirectorSerializer, MovieSerializer, GenreSerializer, CountrySerializer, UserSerializer, CommentSerializer
+from .models import Movie, Genre, Director, Country, Comment
+from .permissions import MyIsAuthenticatedOrReadOnly, CommentAuthorPermission
 
 class CountryAPIView(ListCreateAPIView):
     queryset = Country.objects.all()
@@ -20,6 +24,7 @@ class DirectorRetrieveAPIView(RetrieveUpdateDestroyAPIView):
 
 class MovieAPIView(ListCreateAPIView):
     serializer_class = MovieSerializer
+    permission_classes = [MyIsAuthenticatedOrReadOnly]
     def get_queryset(self):
         genre_id = self.kwargs.get("genre_id")
         director_id = self.kwargs.get("director_id")
@@ -35,6 +40,7 @@ class MovieAPIView(ListCreateAPIView):
         return UserSerializer
 
 class MovieRetrieveAPIView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [MyIsAuthenticatedOrReadOnly]
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
 
@@ -45,3 +51,24 @@ class GenreAPIView(ListCreateAPIView):
 class GenreRetrieveAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+
+class CommentAPIView(ListCreateAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [MyIsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return Comment.objects.filter(movie_id=self.kwargs.get('movie_id'))
+
+    def perform_create(self, serializer):
+        movie = get_object_or_404(Movie, pk=self.kwargs.get('movie_id'))
+        serializer.user = self.request.user
+        serializer.validated_data['user'] = self.request.user
+        serializer.validated_data['movie'] = movie
+        serializer.save()
+        return self
+
+class CommentRetrieveAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [MyIsAuthenticatedOrReadOnly, CommentAuthorPermission]
+    lookup_url_kwarg = 'comment_id'

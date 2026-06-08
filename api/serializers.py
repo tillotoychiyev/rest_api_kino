@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Country, Director, Genre, Movie
+from .models import Country, Director, Genre, Movie, Comment
 
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,3 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
         exclude = ['image']
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id','text', 'create']
