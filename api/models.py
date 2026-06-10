@@ -48,9 +48,9 @@ class Movie(models.Model):
                                     verbose_name="Davomiyligi")
     image = models.ImageField(upload_to='images/', null=True, blank=True,
                                     verbose_name="Filmdan suratlar")
-    director = models.ForeignKey(Director, on_delete=models.CASCADE, verbose_name="Rejissor")
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, verbose_name="Janri")
-    country = models.ForeignKey(Country, on_delete=models.CASCADE,verbose_name="Mamlakati")
+    director = models.ForeignKey(Director, on_delete=models.CASCADE, verbose_name="Rejissor", related_name='movies')
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, verbose_name="Janri", related_name='movies')
+    country = models.ForeignKey(Country, on_delete=models.CASCADE,verbose_name="Mamlakati", related_name='movies')
 
     class Meta:
         verbose_name = "Kino"
